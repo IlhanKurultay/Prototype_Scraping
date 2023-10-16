@@ -1,96 +1,55 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'dashboard_screen.dart';
+import 'package:http/http.dart' as http;
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
+class ScrapedDataScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: DashboardPage(),
-    );
-  }
+  _ScrapedDataScreenState createState() => _ScrapedDataScreenState();
 }
 
-class DashboardPage extends StatelessWidget {
+class _ScrapedDataScreenState extends State<ScrapedDataScreen> {
+  List<String> scrapedData = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    final response = await http.get(Uri.parse('http://localhost/scraper'));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      print(data); // Add this line to check the retrieved data
+      setState(() {
+        scrapedData = List<String>.from(data['results']);
+      });
+    } else {
+      print('Failed to fetch data');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dashboard'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.notifications),
-            onPressed: () {
-              // Add notification functionality here
-            },
-          ),
-        ],
+        title: Text('Scraped Data'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Welcome to Your App!',
-              style: TextStyle(
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () {
-                // Add button functionality here
-              },
-              child: Text('Start Exploring'),
-            ),
-          ],
-        ),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text(
-                'App Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.dashboard),
-              title: Text('Dashboard'),
-              onTap: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => MyApp()));
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.dashboard),
-              title: Text('Dashboard'),
-              onTap: () {
-                // Add navigation to dashboard screen
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
-              onTap: () {
-                // Add navigation to settings screen
-              },
-            ),
-          ],
-        ),
+      body: ListView.builder(
+        itemCount: scrapedData.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(scrapedData[index]),
+          );
+        },
       ),
     );
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: ScrapedDataScreen(),
+  ));
 }
