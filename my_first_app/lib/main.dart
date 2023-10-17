@@ -8,7 +8,7 @@ class ScrapedDataScreen extends StatefulWidget {
 }
 
 class _ScrapedDataScreenState extends State<ScrapedDataScreen> {
-  List<String> scrapedData = [];
+  List<String> imageUrls = [];
 
   @override
   void initState() {
@@ -21,9 +21,9 @@ class _ScrapedDataScreenState extends State<ScrapedDataScreen> {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      print(data); // Add this line to check the retrieved data
+      print(data);
       setState(() {
-        scrapedData = List<String>.from(data['results']);
+        imageUrls = List<String>.from(data['image_src']);
       });
     } else {
       print('Failed to fetch data');
@@ -37,10 +37,15 @@ class _ScrapedDataScreenState extends State<ScrapedDataScreen> {
         title: Text('Scraped Data'),
       ),
       body: ListView.builder(
-        itemCount: scrapedData.length,
+        itemCount: imageUrls.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(scrapedData[index]),
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.network(
+              imageUrls[index],
+              width: 100,
+              height: 100,
+            ),
           );
         },
       ),
