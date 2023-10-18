@@ -8,7 +8,8 @@ class ScrapedDataScreen extends StatefulWidget {
 }
 
 class _ScrapedDataScreenState extends State<ScrapedDataScreen> {
-  Map<String, dynamic> scrapedData = {}; // Use a Map to store the data
+  List<String> results = [];
+  List<String> imageSrc = [];
 
   @override
   void initState() {
@@ -21,8 +22,12 @@ class _ScrapedDataScreenState extends State<ScrapedDataScreen> {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      final resultsData = data['results'];
+      final imageSrcData = data['image_src'];
+
       setState(() {
-        scrapedData = data;
+        results = List<String>.from(resultsData);
+        imageSrc = List<String>.from(imageSrcData);
       });
     } else {
       print('Failed to fetch data');
@@ -38,13 +43,24 @@ class _ScrapedDataScreenState extends State<ScrapedDataScreen> {
       body: ListView(
         children: [
           ListTile(
-            title: Text('Results: ${scrapedData['results']}',
-                style: TextStyle(fontSize: 16.0)),
+            title: Text('Results:', style: TextStyle(fontSize: 16.0)),
           ),
+          for (var result in results)
+            ListTile(
+              title: Text(result, style: TextStyle(fontSize: 16.0)),
+            ),
           ListTile(
-            title: Text('Image Src: ${scrapedData['image_src']}',
-                style: TextStyle(fontSize: 16.0)),
+            title: Text('Image Src:', style: TextStyle(fontSize: 16.0)),
           ),
+          for (var src in imageSrc)
+            ListTile(
+              title: Text(src, style: TextStyle(fontSize: 16.0)),
+            ),
+          ListTile(
+            title: Text('Images:', style: TextStyle(fontSize: 16.0)),
+          ),
+          for (var src in imageSrc)
+            Image.network(src), // Load and display images from URLs
         ],
       ),
     );

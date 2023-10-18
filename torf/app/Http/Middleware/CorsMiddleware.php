@@ -10,7 +10,7 @@ class CorsMiddleware
     {
         // Replace the '*' with the appropriate domain or origin that you want to allow.
         $allowedOrigins = [
-            'http://localhost:64791',
+            'http://localhost:52528',
         ];
 
         $origin = $request->server('HTTP_ORIGIN');
