@@ -8,8 +8,7 @@ use Goutte\Client;
 
 class ScraperController extends Controller
 {
-    private $results = array();
-
+    private $results= array();
     public function scraper()
     {
         $client = new Client();
@@ -27,14 +26,12 @@ class ScraperController extends Controller
             if ($src !== null && str_starts_with($src, 'https')) {
                 return $src;
             }
+            return '';
         });
 
         // Filter out any null values from the $imageSources array
-        $imageSources = array_filter($imageSources);
-
-        // Merge the filtered array back into the original array
-        $imageSources = array_merge($imageSources);
+        $imageSources = array_values(array_filter($imageSources));
 
         return response()->json(['results' => $results, 'image_src' => $imageSources]);
     }
-}
+    }

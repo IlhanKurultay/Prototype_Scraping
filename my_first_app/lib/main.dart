@@ -8,7 +8,7 @@ class ScrapedDataScreen extends StatefulWidget {
 }
 
 class _ScrapedDataScreenState extends State<ScrapedDataScreen> {
-  List<String> scrapedData = [];
+  Map<String, dynamic> scrapedData = {}; // Use a Map to store the data
 
   @override
   void initState() {
@@ -22,7 +22,7 @@ class _ScrapedDataScreenState extends State<ScrapedDataScreen> {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       setState(() {
-        scrapedData = List<String>.from(data['image_src']);
+        scrapedData = data;
       });
     } else {
       print('Failed to fetch data');
@@ -35,16 +35,17 @@ class _ScrapedDataScreenState extends State<ScrapedDataScreen> {
       appBar: AppBar(
         title: Text('Scraped Data'),
       ),
-      body: ListView.builder(
-        itemCount: scrapedData.length,
-        itemBuilder: (context, index) {
-          return Image.network(
-            scrapedData[index],
-            width: 200, // Adjust the width as needed
-            height: 200, // Adjust the height as needed
-            fit: BoxFit.cover, // Choose the BoxFit based on your requirements
-          );
-        },
+      body: ListView(
+        children: [
+          ListTile(
+            title: Text('Results: ${scrapedData['results']}',
+                style: TextStyle(fontSize: 16.0)),
+          ),
+          ListTile(
+            title: Text('Image Src: ${scrapedData['image_src']}',
+                style: TextStyle(fontSize: 16.0)),
+          ),
+        ],
       ),
     );
   }
