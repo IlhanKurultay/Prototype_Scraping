@@ -8,7 +8,9 @@ class ScrapedDataScreen extends StatefulWidget {
 }
 
 class _ScrapedDataScreenState extends State<ScrapedDataScreen> {
-  List<String> results = [];
+  List<String> titles = [];
+  List<String> categories = [];
+  List<String> prices = [];
   List<String> imageSrc = [];
 
   @override
@@ -22,12 +24,11 @@ class _ScrapedDataScreenState extends State<ScrapedDataScreen> {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      final resultsData = data['results'];
-      final imageSrcData = data['image_src'];
-
       setState(() {
-        results = List<String>.from(resultsData);
-        imageSrc = List<String>.from(imageSrcData);
+        titles = List<String>.from(data['results']);
+        categories = List<String>.from(data['categories']);
+        prices = List<String>.from(data['price']);
+        imageSrc = List<String>.from(data['image_src']);
       });
     } else {
       print('Failed to fetch data');
@@ -40,28 +41,47 @@ class _ScrapedDataScreenState extends State<ScrapedDataScreen> {
       appBar: AppBar(
         title: Text('Scraped Data'),
       ),
-      body: ListView(
-        children: [
-          ListTile(
-            title: Text('Results:', style: TextStyle(fontSize: 16.0)),
-          ),
-          for (var result in results)
-            ListTile(
-              title: Text(result, style: TextStyle(fontSize: 16.0)),
+      body: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2, // Display 2 items per row
+        ),
+        itemCount: 8, // Display the first 8 items
+        itemBuilder: (context, index) {
+          return Card(
+            margin: EdgeInsets.all(8.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
             ),
-          ListTile(
-            title: Text('Image Src:', style: TextStyle(fontSize: 16.0)),
-          ),
-          for (var src in imageSrc)
-            ListTile(
-              title: Text(src, style: TextStyle(fontSize: 16.0)),
+            child: Column(
+              children: [
+                Image.network(imageSrc[index], height: 100.0),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Title: ${titles[index]}',
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'Category: ${categories[index]}',
+                        style: TextStyle(fontSize: 12.0),
+                      ),
+                      Text(
+                        'Price: ${prices[index]}',
+                        style: TextStyle(fontSize: 12.0),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ListTile(
-            title: Text('Images:', style: TextStyle(fontSize: 16.0)),
-          ),
-          for (var src in imageSrc)
-            Image.network(src), // Load and display images from URLs
-        ],
+          );
+        },
       ),
     );
   }
