@@ -8,7 +8,10 @@ class ScrapedDataScreen extends StatefulWidget {
 }
 
 class _ScrapedDataScreenState extends State<ScrapedDataScreen> {
-  List<String> scrapedData = [];
+  List<String> titles = [];
+  List<String> categories = [];
+  List<String> prices = [];
+  List<String> imageSrc = [];
 
   @override
   void initState() {
@@ -22,7 +25,10 @@ class _ScrapedDataScreenState extends State<ScrapedDataScreen> {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       setState(() {
-        scrapedData = List<String>.from(data['image_src']);
+        titles = List<String>.from(data['results']);
+        categories = List<String>.from(data['categories']);
+        prices = List<String>.from(data['price']);
+        imageSrc = List<String>.from(data['image_src']);
       });
     } else {
       print('Failed to fetch data');
@@ -35,14 +41,45 @@ class _ScrapedDataScreenState extends State<ScrapedDataScreen> {
       appBar: AppBar(
         title: Text('Scraped Data'),
       ),
-      body: ListView.builder(
-        itemCount: scrapedData.length,
+      body: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2, // Display 2 items per row
+        ),
+        itemCount: 8, // Display the first 8 items
         itemBuilder: (context, index) {
-          return Image.network(
-            scrapedData[index],
-            width: 200, // Adjust the width as needed
-            height: 200, // Adjust the height as needed
-            fit: BoxFit.cover, // Choose the BoxFit based on your requirements
+          return Card(
+            margin: EdgeInsets.all(8.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: Column(
+              children: [
+                Image.network(imageSrc[index], height: 100.0),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Title: ${titles[index]}',
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'Category: ${categories[index]}',
+                        style: TextStyle(fontSize: 12.0),
+                      ),
+                      Text(
+                        'Price: ${prices[index]}',
+                        style: TextStyle(fontSize: 12.0),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),

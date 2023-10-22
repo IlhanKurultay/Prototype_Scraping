@@ -3,25 +3,28 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class CorsMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle($request, Closure $next)
     {
-        $response = $next($request);
+        // Replace the '*' with the appropriate domain or origin that you want to allow.
+        $allowedOrigins = [
+            'http://localhost:52528',
+        ];
 
-        $response->headers->set('Access-Control-Allow-Origin', '*');
-        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-        $response->headers->set('Access-Control-Max-Age', '3600');
+        $origin = $request->server('HTTP_ORIGIN');
 
-        return $response;
+        if (in_array($origin, $allowedOrigins)) {
+            // Allow the specific origin to access this resource.
+            return $next($request)
+                ->header('Access-Control-Allow-Origin', $origin)
+                ->header('Access-Control-Allow-Methods', 'GET, POST')
+                ->header('Access-Control-Allow-Headers', 'Content-Type');
+        }
+
+        // Handle requests from disallowed origins here.
+
+        return $next($request);
     }
 }
