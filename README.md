@@ -1,10 +1,13 @@
-"# Prototype Movement Tracking " 
-:
+"# Prototype_Scraping" 
+Torf-php laravel start up:
 ```bash
-install python
+./vendor/bin/sail
 ```
-Yolov5 start up: 
+Flutter my_first_app start up: 
 ```bash
-python detect.py --source car.mp4 --save-txt
+flutter run -d chrome --web-browser-flag "--disable-web-security" --web-port 52528
 ```
-The result will be in the runs/detect/exp folder.
+Javascript: 
+```bash
+node scraper.js
+```
